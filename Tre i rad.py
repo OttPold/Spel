@@ -7,7 +7,7 @@ matrix = [[" ", " "," "],
 
 
 __author__  = "Ott Rudolf Pöld"
-__version__ = "2.0.0"
+__version__ = "3.0.0"
 __email__   = "Ott.Pold@elev.ga.ntig.se"
 
 pygame.init()
@@ -17,6 +17,11 @@ line_color = (10, 10, 10)
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Tic-Tac-Toe")
 
+x_img = pygame.image.load('x.png')
+o_img = pygame.image.load('o.png')
+x_img = pygame.transform.scale(x_img, (80, 80))
+o_img = pygame.transform.scale(o_img, (80, 80))
+
 def draw_board():
     screen.fill((255, 255, 255))
     for row in range(1, 3):
@@ -24,11 +29,19 @@ def draw_board():
     for col in range(1, 3):
         pygame.draw.line(screen, line_color, (col * 100, 0), (col * 100, 300), 5)
 
+def draw_marks():
+    for row in range(3):
+        for col in range(3):
+            if matrix[row][col] == 'X':
+                screen.blit(x_img, (col * 100 + 10, row * 100 + 10))
+            elif matrix[row][col] == 'O':
+                screen.blit(o_img, (col * 100 + 10, row * 100 + 10))
 
 def display_board():
     for row in matrix:
         print(" | ".join(row))
         print("-" * 10)
+        
 
 def check_board():
     for row in matrix:
@@ -59,27 +72,28 @@ def main():
     pygame.display.update()
 
     while True:
-        display_board()
-        result = check_board()
-        if result:
-            print(result)
-            break
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                col, row = x // 100, y // 100
+                if matrix[row][col] == " ":
+                    matrix[row][col] = player_turn
+                    player_turn = 'O' if player_turn == 'X' else 'X'
+                    draw_board()
+                    draw_marks()
+                    display_board()
+                    pygame.display.update()
 
-        p1_row = int(input("Player 1 - Ange rad (0, 1, 2 ): "))
-        p1_col = int(input("Player 1 - Ange rad (0, 1, 2 ): "))
-        if matrix[p1_row][p1_col] == " ":
-            matrix[p1_row][p1_col] = "X"
+                    result = check_board()
+                    if result:
+                        print(result)
+                        pygame.time.wait(2000)
+                        pygame.quit()
+                        sys.exit()
 
-        display_board()
-        result = check_board()
-        if result:
-            print(result)
-            break
-
-        p2_row = int(input("Player 2 - Ange rad (0, 1, 2 ): "))
-        p2_col = int(input("Player 2 - Ange rad (0, 1, 2 ): "))
-        if matrix[p2_row][p2_col] == " ":
-            matrix[p2_row][p2_col] = "O"
 
 if __name__ == "__main__":
     main()
