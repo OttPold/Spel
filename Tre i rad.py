@@ -7,7 +7,7 @@ matrix = [[" ", " "," "],
 
 
 __author__  = "Ott Rudolf Pöld"
-__version__ = "3.0.0"
+__version__ = "4.0.0"
 __email__   = "Ott.Pold@elev.ga.ntig.se"
 
 pygame.init()
@@ -66,9 +66,46 @@ def check_board():
 
     return None
 
-def main():
+def main_menu():
+    screen.fill((255, 255, 255))
+    font = pygame.font.Font(None, 36)
+    title_text = font.render("Tic-Tac-Toe", True, (0, 0, 0))
+    title_rect = title_text.get_rect(center=(width//2, 50))
+    screen.blit(title_text, title_rect)
+
+    pvp_button = pygame.Rect(50, 100, 200, 50)
+    pygame.draw.rect(screen, (0, 200, 0), pvp_button)
+    pvp_text = font.render("Player vs Player", True, (0, 0, 0))
+    pvp_text_rect = pvp_text.get_rect(center=pvp_button.center)
+    screen.blit(pvp_text, pvp_text_rect)
+
+    #kmr adda detta vs computer sak senare
+    pvc_button = pygame.Rect(30, 160, 240, 50)
+    pygame.draw.rect(screen, (0, 0, 200), pvc_button)
+    pvc_text = font.render("Player vs Computer", True, (0, 0, 0))
+    pvc_text_rect = pvc_text.get_rect(center=pvc_button.center)
+    screen.blit(pvc_text, pvc_text_rect)
+
+    pygame.display.update()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                if pvp_button.collidepoint(x, y):
+                    pvp_game()
+                elif pvc_button.collidepoint(x, y):
+                    pvc_game()
+
+                
+def pvp_game():
     player_turn = 'X'
     draw_board()
+    draw_marks()
+    display_board()
     pygame.display.update()
 
     while True:
@@ -95,5 +132,6 @@ def main():
                         sys.exit()
 
 
+
 if __name__ == "__main__":
-    main()
+    main_menu()
