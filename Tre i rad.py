@@ -43,12 +43,46 @@ def display_board():
         print(" | ".join(row))
         print("-" * 10)
         
+def handle_game_result(result):
+    print(result)
+    pygame.time.wait(2000)
+    pygame.quit()
+    sys.exit()
+
+def handle_human_move(row, col, current_player):
+    matrix[row][col] = current_player
+    new_player = 'O' if current_player == 'X' else 'X'
+    
+    draw_board()
+    draw_marks()
+    display_board()
+    pygame.display.update()
+    
+    result = check_board()
+    if result:
+        handle_game_result(result)
+    return new_player
+
+def handle_computer_move():
+    empty_cells = [(r, c) for r in range(3) for c in range(3) if matrix[r][c] == " "]
+    if empty_cells:
+        r, c = random.choice(empty_cells)
+        matrix[r][c] = 'O'
+        
+        draw_board()
+        draw_marks()
+        display_board()
+        pygame.display.update()
+        
+        result = check_board()
+        if result:
+            handle_game_result(result)
 
 def check_board():
     for row in matrix:
         if row[0] == row[1] == row[2] and row[0] != " ":
             return f"{row[0]} wins!"
-    
+            
 
     for col in range(3):
         if matrix[0][col] == matrix[1][col] == matrix[2][col] and matrix[0][col] != " ":
@@ -97,12 +131,11 @@ def main_menu():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
                 if pvp_button.collidepoint(x, y):
-                    pvp_game()
+                    game_loop(vs_computer=False) # pvp
                 elif pvc_button.collidepoint(x, y):
-                    pvc_game()
+                    game_loop(vs_computer=True) # pvc
 
-
-def pvp_game():
+def game_loop(vs_computer=False):
     player_turn = 'X'
     draw_board()
     draw_marks()
@@ -115,71 +148,17 @@ def pvp_game():
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                if vs_computer and player_turn != 'X':
+                    continue  
+                
                 x, y = event.pos
                 col, row = x // 100, y // 100
                 if matrix[row][col] == " ":
-                    matrix[row][col] = player_turn
-                    player_turn = 'O' if player_turn == 'X' else 'X'
-                    draw_board()
-                    draw_marks()
-                    display_board()
-                    pygame.display.update()
-
-                    result = check_board()
-                    if result:
-                        print(result)
-                        pygame.time.wait(2000)
-                        pygame.quit()
-                        sys.exit()
-
-
-def pvc_game():
-    player_turn = 'X'
-    draw_board()
-    draw_marks()
-    display_board()
-    pygame.display.update()
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                x, y = event.pos
-                col, row = x // 100, y // 100
-                if matrix[row][col] == " ":
-                    matrix[row][col] = player_turn
-                    player_turn = 'O' if player_turn == 'X' else 'X'
-                    draw_board()
-                    draw_marks()
-                    display_board()
-                    pygame.display.update()
-
-                    result = check_board()
-                    if result:
-                        print(result)
-                        pygame.time.wait(2000)
-                        pygame.quit()
-                        sys.exit()
-
+                    player_turn = handle_human_move(row, col, player_turn)
                     
-                    empty_cells = [(r, c) for r in range(3) for c in range(3) if matrix[r][c] == " "]
-                    if empty_cells:
-                        r, c = random.choice(empty_cells)
-                        matrix[r][c] = 'O'
+                    if vs_computer and player_turn == 'O':
+                        handle_computer_move()
                         player_turn = 'X'
-                        draw_board()
-                        draw_marks()
-                        display_board()
-                        pygame.display.update()
-
-                        result = check_board()
-                        if result:
-                            print(result)
-                            pygame.time.wait(2000)
-                            pygame.quit()
-                            sys.exit()
 
 
 
