@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 matrix = [[" ", " "," "], 
           [" ", " "," "],
@@ -79,7 +80,7 @@ def main_menu():
     pvp_text_rect = pvp_text.get_rect(center=pvp_button.center)
     screen.blit(pvp_text, pvp_text_rect)
 
-    #kmr adda detta vs computer sak senare
+
     pvc_button = pygame.Rect(30, 160, 240, 50)
     pygame.draw.rect(screen, (0, 0, 200), pvc_button)
     pvc_text = font.render("Player vs Computer", True, (0, 0, 0))
@@ -100,7 +101,7 @@ def main_menu():
                 elif pvc_button.collidepoint(x, y):
                     pvc_game()
 
-                
+
 def pvp_game():
     player_turn = 'X'
     draw_board()
@@ -130,6 +131,55 @@ def pvp_game():
                         pygame.time.wait(2000)
                         pygame.quit()
                         sys.exit()
+
+
+def pvc_game():
+    player_turn = 'X'
+    draw_board()
+    draw_marks()
+    display_board()
+    pygame.display.update()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                col, row = x // 100, y // 100
+                if matrix[row][col] == " ":
+                    matrix[row][col] = player_turn
+                    player_turn = 'O' if player_turn == 'X' else 'X'
+                    draw_board()
+                    draw_marks()
+                    display_board()
+                    pygame.display.update()
+
+                    result = check_board()
+                    if result:
+                        print(result)
+                        pygame.time.wait(2000)
+                        pygame.quit()
+                        sys.exit()
+
+                    
+                    empty_cells = [(r, c) for r in range(3) for c in range(3) if matrix[r][c] == " "]
+                    if empty_cells:
+                        r, c = random.choice(empty_cells)
+                        matrix[r][c] = 'O'
+                        player_turn = 'X'
+                        draw_board()
+                        draw_marks()
+                        display_board()
+                        pygame.display.update()
+
+                        result = check_board()
+                        if result:
+                            print(result)
+                            pygame.time.wait(2000)
+                            pygame.quit()
+                            sys.exit()
 
 
 
